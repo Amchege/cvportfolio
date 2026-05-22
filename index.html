@@ -980,21 +980,53 @@
           </div>
         </a>
       </div>
-      <form class="contact-form" onsubmit="event.preventDefault(); alert('Thanks! Copy this form to a backend service like Formspree to make it live.');">
+      <form class="contact-form" id="contact-form">
+        <div id="form-success" style="display:none; padding:1rem 1.25rem; background:#e8f5e9; border:1px solid #a5d6a7; border-radius:6px; color:#2e7d32; font-size:0.9rem; font-weight:500;">
+          ✅ Message sent! I'll get back to you within 24 hours.
+        </div>
+        <div id="form-error" style="display:none; padding:1rem 1.25rem; background:#ffebee; border:1px solid #ef9a9a; border-radius:6px; color:#c62828; font-size:0.9rem; font-weight:500;">
+          ❌ Something went wrong. Please email ibrahkaris@gmail.com directly.
+        </div>
         <div class="form-group">
           <label class="form-label">Your Name</label>
-          <input type="text" class="form-input" placeholder="Jane Smith">
+          <input type="text" name="name" class="form-input" placeholder="Jane Smith" required>
         </div>
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <input type="email" class="form-input" placeholder="jane@company.com">
+          <input type="email" name="email" class="form-input" placeholder="jane@company.com" required>
         </div>
         <div class="form-group">
           <label class="form-label">Message</label>
-          <textarea class="form-textarea" placeholder="Tell me about your project or role..."></textarea>
+          <textarea name="message" class="form-textarea" placeholder="Tell me about your project or role..." required></textarea>
         </div>
-        <button type="submit" class="btn-primary" style="align-self: flex-start;">Send Message →</button>
+        <button type="submit" id="submit-btn" class="btn-primary" style="align-self: flex-start;">Send Message →</button>
       </form>
+      <script>
+        document.getElementById('contact-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          var btn = document.getElementById('submit-btn');
+          btn.textContent = 'Sending...';
+          btn.disabled = true;
+          try {
+            var resp = await fetch('https://formspree.io/f/xdajzevd', {
+              method: 'POST',
+              body: new FormData(this),
+              headers: { 'Accept': 'application/json' }
+            });
+            if (resp.ok) {
+              document.getElementById('form-success').style.display = 'block';
+              document.getElementById('form-error').style.display = 'none';
+              this.reset();
+            } else {
+              document.getElementById('form-error').style.display = 'block';
+            }
+          } catch(err) {
+            document.getElementById('form-error').style.display = 'block';
+          }
+          btn.textContent = 'Send Message →';
+          btn.disabled = false;
+        });
+      </script>
     </div>
   </div>
 </section>
